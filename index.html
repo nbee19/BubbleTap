@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rainbow Bubble Wrap - Endless Popping Fun</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbowText 3s ease-in-out infinite;
+        }
+
+        @keyframes rainbowText {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .controls {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .bubble-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 8px;
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .bubble {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 
+                inset -5px -5px 10px rgba(0,0,0,0.2),
+                inset 5px 5px 10px rgba(255,255,255,0.3),
+                2px 2px 5px rgba(0,0,0,0.1);
+            user-select: none;
+            border: 2px solid;
+        }
+
+        .bubble:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                inset -5px -5px 10px rgba(0,0,0,0.2),
+                inset 5px 5px 10px rgba(255,255,255,0.4),
+                3px 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .bubble:active {
+            transform: scale(0.95);
+        }
+
+        .bubble.popped {
+            animation: popAnimation 0.3s ease-out forwards;
+        }
+
+        @keyframes popAnimation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleAnimation 0.6s ease-out forwards;
+        }
+
+        @keyframes particleAnimation {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .sound-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                gap: 20px;
+                padding: 10px 20px;
+            }
+            
+            .bubble-container {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 6px;
+                padding: 15px;
+            }
+            
+            .bubble {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="sound-toggle" id="soundToggle" title="Toggle Sound">🔊</button>
+    
+    <div class="header">
+        <h1>🌈 Rainbow Bubble Wrap</h1>
+        <p>Click the colorful bubbles to pop them! Endless rainbow fun!</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <span class="stat-number" id="poppedCount">0</span>
+            <span class="stat-label">Bubbles Popped</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" id="totalBubbles">0</span>
+            <span class="stat-label">Total Bubbles</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" id="sheetsCreated">1</span>
+            <span class="stat-label">Sheets Created</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="newSheetBtn">🌈 New Rainbow Sheet</button>
+        <button class="btn" id="popAllBtn">💥 Pop All</button>
+        <button class="btn" id="resetStatsBtn">📊 Reset Stats</button>
+    </div>
+
+    <div class="bubble-container" id="bubbleContainer"></div>
+
+    <script>
+        class RainbowBubbleWrap {
+            constructor() {
+                this.poppedCount = 0;
+                this.totalBubbles = 0;
+                this.sheetsCreated = 1;
+                this.soundEnabled = true;
+                this.audioContext = null;
+                
+                this.initializeAudio();
+                this.createBubbleSheet();
+                this.bindEvents();
+                this.updateStats();
+            }
+
+            initializeAudio() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.log('Web Audio API not supported');
+                    this.soundEnabled = false;
+                }
+            }
+
+            createPopSound() {
+                if (!this.audioContext || !this.soundEnabled) return;
+
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.1);
+
+                gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.1);
+            }
+
+            getRainbowColor() {
+                const colors = [
+                    { hue: 0, name: 'red' },      // Red
+                    { hue: 30, name: 'orange' },   // Orange
+                    { hue: 60, name: 'yellow' },   // Yellow
+                    { hue: 120, name: 'green' },   // Green
+                    { hue: 180, name: 'cyan' },    // Cyan
+                    { hue: 240, name: 'blue' },    // Blue
+                    { hue: 270, name: 'purple' },  // Purple
+                    { hue: 300, name: 'magenta' }, // Magenta
+                    { hue: 330, name: 'pink' }     // Pink
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            createBubbleGradient(hue) {
+                const highlight = `hsl(${hue}, 100%, 85%)`;
+                const base = `hsl(${hue}, 100%, 65%)`;
+                const shadow = `hsl(${hue}, 100%, 45%)`;
+                return `radial-gradient(circle at 30% 30%, ${highlight}, ${base}, ${shadow})`;
+            }
+
+            createBubbleSheet() {
+                const container = document.getElementById('bubbleContainer');
+                container.innerHTML = '';
+
+                const bubbleCount = Math.floor((window.innerWidth > 768 ? 80 : 60));
+                this.totalBubbles += bubbleCount;
+
+                for (let i = 0; i < bubbleCount; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    bubble.dataset.popped = 'false';
+                    
+                    const colorInfo = this.getRainbowColor();
+                    const hue = colorInfo.hue;
+                    
+                    bubble.dataset.hue = hue;
+                    bubble.style.background = this.createBubbleGradient(hue);
+                    bubble.style.borderColor = `hsl(${hue}, 100%, 35%)`;
+                    
+                    bubble.addEventListener('click', (e) => this.popBubble(e, bubble));
+                    
+                    container.appendChild(bubble);
+                }
+
+                this.updateStats();
+            }
+
+            popBubble(event, bubble) {
+                if (bubble.dataset.popped === 'true') return;
+
+                bubble.dataset.popped = 'true';
+                bubble.classList.add('popped');
+                
+                this.poppedCount++;
+                this.createPopSound();
+                this.createParticles(event.clientX, event.clientY, bubble.dataset.hue);
+                this.updateStats();
+
+                setTimeout(() => {
+                    bubble.style.visibility = 'hidden';
+                }, 300);
+            }
+
+            createParticles(x, y, hue) {
+                const particleCount = 8;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const distance = 25 + Math.random() * 25;
+                    const dx = Math.cos(angle) * distance;
+                    const dy = Math.sin(angle) * distance;
+                    
+                    particle.style.setProperty('--dx', `${dx}px`);
+                    particle.style.setProperty('--dy', `${dy}px`);
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    particle.style.position = 'fixed';
+                    particle.style.background = `hsl(${hue}, 100%, 70%)`;
+                    particle.style.boxShadow = `0 0 6px hsl(${hue}, 100%, 50%)`;
+                    
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 600);
+                }
+            }
+
+            popAllBubbles() {
+                const bubbles = document.querySelectorAll('.bubble:not(.popped)');
+                bubbles.forEach((bubble, index) => {
+                    setTimeout(() => {
+                        if (bubble.dataset.popped === 'false') {
+                            bubble.click();
+                        }
+                    }, index * 30);
+                });
+            }
+
+            newSheet() {
+                this.sheetsCreated++;
+                this.createBubbleSheet();
+            }
+
+            resetStats() {
+                this.poppedCount = 0;
+                this.totalBubbles = 0;
+                this.sheetsCreated = 1;
+                this.createBubbleSheet();
+            }
+
+            updateStats() {
+                document.getElementById('poppedCount').textContent = this.poppedCount;
+                document.getElementById('totalBubbles').textContent = this.totalBubbles;
+                document.getElementById('sheetsCreated').textContent = this.sheetsCreated;
+            }
+
+            toggleSound() {
+                this.soundEnabled = !this.soundEnabled;
+                const soundBtn = document.getElementById('soundToggle');
+                soundBtn.textContent = this.soundEnabled ? '🔊' : '🔇';
+                
+                if (this.soundEnabled && !this.audioContext) {
+                    this.initializeAudio();
+                }
+            }
+
+            bindEvents() {
+                document.getElementById('newSheetBtn').addEventListener('click', () => this.newSheet());
+                document.getElementById('popAllBtn').addEventListener('click', () => this.popAllBubbles());
+                document.getElementById('resetStatsBtn').addEventListener('click', () => this.resetStats());
+                document.getElementById('soundToggle').addEventListener('click', () => this.toggleSound());
+
+                // Enable audio context on first user interaction
+                document.addEventListener('click', () => {
+                    if (this.audioContext && this.audioContext.state === 'suspended') {
+                        this.audioContext.resume();
+                    }
+                }, { once: true });
+            }
+        }
+
+        // Initialize the rainbow bubble wrap when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new RainbowBubbleWrap();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Debounce resize events
+            clearTimeout(window.resizeTimeout);
+            window.resizeTimeout = setTimeout(() => {
+                // Note: We don't automatically recreate on resize to preserve current session
+            }, 250);
+        });
+    </script>
+</body>
+</html>
